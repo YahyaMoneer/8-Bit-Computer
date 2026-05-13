@@ -1,0 +1,69 @@
+address-driving instructions:
+    LDA[program-memory] (AI, RO, P2DA) //load A from data memory address from program memory
+    LDB[program-memory] (BI, RO, P2DA) //load B from data memory address from program memory
+    STA[program-memory] (AO, RI, P2DA) //store A in data memory address from program memory
+    JMP[data-memory] (PI, RO) //jump to program memory address in data memory
+    JC [data-memory] (PI, RO) //jump to program memory address in data memory if carry
+    JZ [data-memory] (PI, RO) //jump to program memory address in data memory if zero
+    JN [data-memory] (PI, RO) //jump to program memory address in data memory if negative
+    CALL[data-memory] (PI, RO, RAI) //jump to program memory address in data memory and save the current address + 1 in RA register
+    RET[register] (PI, RAO) //jump to program memory address in RA register
+
+data-moving instructions:
+    MAB (AO, BI) //copy A to B
+    MAC (AO, HI) //copy A to H
+    MAL (AO, LI) //copy A to L
+    OUT (HO, LO) //output H&L
+    LDAI (AI, P2D) //load A immediately
+    LDBI (BI, P2D) //load B immediately
+
+arithmetic & logic instructions:
+    ADD (AI, EO, ADD, FI) //A + B = A
+    SUB (AI, EO, FI) //A - B = A
+    CMP+ (FI, ADD) //update flag register based on addition without overwriting A
+    CMP- (FI) //update flag register based on subtraction without overwriting A
+    MUL (CI, MUL) //A * B = H&L
+    AND (AI, AND) //A AND B = A
+    NOT (AI, NOT) //A = !A
+    XOR (AI, XOR) //A XOR B = A
+    SHR (AI, SHR) //A >> = A
+
+other instructions:
+    HLT (HLT) //halt system clock
+
+abbreviations:
+    signals:
+        AI: register A in
+        AO: register A out
+        BI: register B in
+        HI: register H in
+        HO: register H out
+        LI: register L in
+        LO: register L out    
+        RI: data memory in
+        RO: data memory out
+        PI: program counter in
+        RAI: return address register in
+        RAO: return address register out
+        FI: flag register in
+        EO: arithmetic unit out
+        P2D: program memory to data bus
+        P2DA: program memory to data memory address bus
+    
+registers:
+    4bit registers:
+        1.1-flag register
+    8bit registers:
+        2.1-register A
+        2.2-register B
+        2.3-register H
+        2.4-register L
+        2.5-program counter
+        2.6-return address register
+
+architecture:
+    single cycle Harvard.
+
+notes:
+    1-subtraction is active high and every other signal is active low, the arithmetic unit is always subtracting, but we can control when to output that subtraction, when to save its flags, and when to switch to addition.
+    2-the CALL instruction does not use the main arithmetic unit to add 1 to the current address to be saved, but rather it uses a private adder with the program counter as its first input and the constant 1 as its second input.
